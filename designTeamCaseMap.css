@@ -1,0 +1,371 @@
+/* 지도 컨테이너 */
+.map-container {
+    width: 100%;
+    height: 400px;
+    position: relative;
+    border: 1px solid #d8dde6;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.map-div {
+    width: 100%;
+    height: 100%;
+}
+
+/* 지도 컨트롤 버튼들 */
+.map-control-btn {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    background: #fff;
+    border: 2px solid #E5E5E5;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+    z-index: 1000;
+    color: #54698D;
+}
+
+.map-control-btn:hover {
+    border-color: #1B96FF;
+    background: #F3F9FF;
+    color: #1B96FF;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(27, 150, 255, 0.2);
+}
+
+.map-control-btn:active {
+    transform: scale(0.95);
+}
+
+/* 홈 버튼 (왼쪽 상단) */
+.home-btn {
+    top: 12px;
+    left: 12px;
+}
+
+/* 현재위치 버튼 (왼쪽 하단) */
+.location-btn {
+    bottom: 12px;
+    left: 12px;
+}
+
+/* 본사 마커 */
+:host .marker.headquarters {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+:host .marker.headquarters .marker-icon {
+    background: linear-gradient(135deg, #1B96FF 0%, #0B5CAB 100%);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(27, 150, 255, 0.4);
+    border: 3px solid white;
+}
+
+:host .marker.headquarters .marker-icon::before {
+    transform: rotate(45deg);
+    content: '🏢';
+}
+
+:host .marker.headquarters .marker-label {
+    background: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    border: 1px solid #E5E5E5;
+    color: #080707;
+}
+
+/* Case 마커 */
+:host .marker.case {
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+:host .marker.case .marker-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+    border: 3px solid white;
+    position: relative;
+}
+
+/* 긴급도별 애니메이션 */
+:host .marker.case.high .marker-icon {
+    animation: pulse-red 2s infinite;
+}
+
+:host .marker.case.medium .marker-icon {
+    animation: pulse-orange 2s infinite;
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+@keyframes pulse-orange {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 165, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 165, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 165, 0, 0);
+    }
+}
+
+/* 지연일수 표시 */
+:host .marker.case .marker-delay {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #080707;
+    color: white;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    border: 2px solid white;
+    padding: 0 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* 현재 위치 마커 */
+:host .marker.current-location {
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+:host .marker.current-location .marker-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: #1B96FF;
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(27, 150, 255, 0.4);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+:host .marker.current-location .marker-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    border: 2px solid #1B96FF;
+    border-radius: 50%;
+    animation: ripple 1.8s infinite;
+    opacity: 0.6;
+}
+
+:host .marker.current-location .marker-ring-outer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    border: 1px solid #1B96FF;
+    border-radius: 50%;
+    animation: ripple 1.8s infinite 0.6s;
+    opacity: 0.4;
+}
+
+@keyframes ripple {
+    0% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(0.3);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* 마커 팝업 커스터마이징 */
+:host .leaflet-popup-content-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: none;
+}
+
+:host .leaflet-popup-content {
+    margin: 16px;
+    line-height: 1.4;
+    font-size: 13px;
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+    min-width: 250px;
+}
+
+:host .leaflet-popup-tip {
+    background: #fff;
+}
+
+/* 팝업 내부 버튼 스타일 */
+:host .popup-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+:host .popup-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: white;
+}
+
+:host .popup-btn.directions {
+    background: #1B96FF;
+}
+
+:host .popup-btn.directions:hover {
+    background: #0B5CAB;
+    transform: translateY(-1px);
+}
+
+:host .popup-btn.resolve {
+    background: #04844B;
+}
+
+:host .popup-btn.resolve:hover {
+    background: #036B3F;
+    transform: translateY(-1px);
+}
+
+:host .popup-btn svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+}
+
+/* 테이블 지연일수 스타일 */
+.delay-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.delay-high .delay-badge {
+    background-color: #FFDDD3;
+    color: #8E030F;
+}
+
+.delay-medium .delay-badge {
+    background-color: #FFF1CC;
+    color: #8B5B00;
+}
+
+.delay-low .delay-badge {
+    background-color: #FFF8CC;
+    color: #6B5900;
+}
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+    .slds-table {
+        font-size: 12px;
+    }
+    
+    .slds-table th,
+    .slds-table td {
+        padding: 8px 6px;
+    }
+    
+    .map-container {
+        height: 350px;
+    }
+    
+    .hide-on-mobile {
+        display: none !important;
+    }
+    
+    /* 모바일에서 팝업 크기 조정 */
+    :host .leaflet-popup-content {
+        min-width: 200px;
+        font-size: 12px;
+    }
+    
+    /* 모바일에서 버튼 크기 조정 */
+    .map-control-btn {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* 테이블 호버 효과 */
+.slds-table tbody tr:hover {
+    background-color: #F3F9FF;
+}
+
+.slds-table tbody tr:hover .slds-button_icon {
+    color: #1B96FF;
+    background-color: #F3F9FF;
+}
+
+/* 위치 이동 버튼 호버 효과 */
+.slds-button_icon-border-filled:hover {
+    border-color: #1B96FF;
+    background-color: #F3F9FF;
+}

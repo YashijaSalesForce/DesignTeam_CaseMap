@@ -1,0 +1,137 @@
+<template>
+    <lightning-card title="디자인팀 Case 관리" icon-name="standard:case">
+        <lightning-button-icon 
+            icon-name="utility:refresh" 
+            alternative-text="새로고침" 
+            title="새로고침"
+            onclick={handleRefresh}
+            slot="actions">
+        </lightning-button-icon>
+        
+        <div class="slds-p-horizontal_medium">
+            <!-- 로딩 스피너 -->
+            <template if:true={isLoading}>
+                <div class="slds-text-align_center slds-m-bottom_medium">
+                    <lightning-spinner alternative-text="로딩 중..." size="small"></lightning-spinner>
+                </div>
+            </template>
+  
+            <!-- 오류 메시지 -->
+            <template if:true={errorMessage}>
+                <div class="slds-m-bottom_medium">
+                    <div class="slds-notify slds-notify_alert slds-alert_error">
+                        <span class="slds-assistive-text">오류</span>
+                        <h2>{errorMessage}</h2>
+                    </div>
+                </div>
+            </template>
+  
+            <!-- 지도 영역 + 컨트롤 버튼들 -->
+            <div class="map-container">
+                <div class="map-div" lwc:dom="manual"></div>
+                
+                <!-- 홈 버튼 (왼쪽 상단) -->
+                <button class="map-control-btn home-btn" onclick={goToHome} title="본사로 이동">
+                    <lightning-icon icon-name="utility:home" size="small"></lightning-icon>
+                </button>
+                
+                <!-- 현재위치 버튼 (왼쪽 하단) -->
+                <button class="map-control-btn location-btn" onclick={goToCurrentLocation} title="현재 위치로 이동">
+                    <lightning-icon icon-name="utility:location" size="small"></lightning-icon>
+                </button>
+            </div>
+  
+            <!-- Case 목록 테이블 -->
+            <template if:true={isMapInitialized}>
+                <div class="slds-m-top_large">
+                    <div class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <lightning-icon icon-name="standard:case" size="small"></lightning-icon>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <span>Case 목록 (예상 지연일수 순)</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="slds-text-title_caps" scope="col">
+                                            <div class="slds-truncate" title="케이스 번호">케이스</div>
+                                        </th>
+                                        <th class="slds-text-title_caps" scope="col">
+                                            <div class="slds-truncate" title="호텔">호텔</div>
+                                        </th>
+                                        <th class="slds-text-title_caps hide-on-mobile" scope="col">
+                                            <div class="slds-truncate" title="문제">문제</div>
+                                        </th>
+                                        <th class="slds-text-title_caps" scope="col">
+                                            <div class="slds-truncate" title="예상 지연">지연</div>
+                                        </th>
+                                        <th class="slds-text-title_caps hide-on-mobile" scope="col">
+                                            <div class="slds-truncate" title="진행률">진행률</div>
+                                        </th>
+                                        <th class="slds-text-title_caps" scope="col">
+                                            <div class="slds-truncate" title="액션">위치</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={sortedCaseData} for:item="caseItem">
+                                        <tr key={caseItem.id} class="slds-hint-parent">
+                                            <td data-label="케이스 번호">
+                                                <div class="slds-truncate" title={caseItem.caseNumber}>
+                                                    {caseItem.caseNumber}
+                                                </div>
+                                            </td>
+                                            <td data-label="호텔">
+                                                <div class="slds-truncate" title={caseItem.hotelName}>
+                                                    {caseItem.hotelName}
+                                                </div>
+                                            </td>
+                                            <td data-label="문제" class="hide-on-mobile">
+                                                <div class="slds-truncate" title={caseItem.subject}>
+                                                    {caseItem.subject}
+                                                </div>
+                                            </td>
+                                            <td data-label="예상 지연">
+                                                <div class={caseItem.delayClass}>
+                                                    <span class="delay-badge">{caseItem.estimatedDelay}일</span>
+                                                </div>
+                                            </td>
+                                            <td data-label="진행률" class="hide-on-mobile">
+                                                <div class="slds-truncate">
+                                                    <span>{caseItem.constructionPhase}</span>
+                                                    <span class="slds-text-color_weak"> ({caseItem.constructionProgress}%)</span>
+                                                </div>
+                                            </td>
+                                            <td data-label="액션">
+                                                <button 
+                                                    class="slds-button slds-button_icon slds-button_icon-border-filled"
+                                                    onclick={handleMoveToLocation}
+                                                    data-case-id={caseItem.id}
+                                                    title="위치로 이동"
+                                                >
+                                                    <lightning-icon 
+                                                        icon-name="utility:location" 
+                                                        size="x-small"
+                                                        alternative-text="위치로 이동">
+                                                    </lightning-icon>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>
